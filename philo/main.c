@@ -6,79 +6,124 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:46:19 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/03 18:01:41 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/05 18:25:01 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	eat(t_philo *philo)
+void	validate_arguments(int argc, char *argv[])
 {
-	int				start_time;
-	struct timeval	tv;
+	int		i;
+	int		j;
+	bool	sign;
+	int		len;
 
-	start_time = gettimeofday(&tv, NULL);
-	if (start_time == -1)
-		exit(1);
-	while (gettimeofday(&tv, NULL) < start_time + philo->time_to_eat)
-		usleep(philo->time_to_eat);
+	if (argc < 5 || argc > 6)
+		error_exit("Invalid number of arguments.");
+	i = 1;
+	sign = false;
+	while (argv[i])
+	{
+		j = 0;
+		if (argv[i][j] == '+' || argv[i][j] == '-')
+		{
+			sign = true;
+			if (argv[i][j] == '-')
+				error_exit("Invalid negative number.");
+			else
+				j++;
+		}
+		while (argv[i][j])
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+				error_exit("Invalid number.");
+			j++;
+		}
+		len = ft_strlen(argv[i]);
+		if ((len > 19 && !sign) || (len > 20 && sign) || (len == 19
+				&& ft_strcmp(&argv[i][0], "9223372036854775807") > 0 && !sign)
+			|| (len == 20 && ft_strcmp(&argv[i][1], "9223372036854775807") > 0
+				&& sign))
+			error_exit("Argument is too big");
+		i++;
+	}
 }
 
-void	*live(void *arg)
+void	init_data(t_table *table, t_philo **philos, int argc, char *argv[])
 {
-	t_philo	*philo;
+	int	i;
 
-	philo = (t_philo *)arg;
-	if (philo->number_of_philosophers % 2 == 0 && philo->id % 2 == 0)
-		usleep(1000);
-	else if (philo->number_of_philosophers % 2 != 0 && philo->id % 2 != 0)
-		usleep(1000);
-	while (1)
+	table->number_of_philosophers = ft_long_atoi(argv[1]);
+	table->time_to_die = ft_long_atoi(argv[2]);
+	table->time_to_eat = ft_long_atoi(argv[3]);
+	table->time_to_sleep = ft_long_atoi(argv[4]);
+	table->number_of_times_each_philosopher_must_eat = -1;
+	if (argc == 6)
+		table->number_of_times_each_philosopher_must_eat = ft_long_atoi(argv[5]);
+	table->mutex_fork = malloc(table->number_of_philosophers * sizeof(pthread_mutex_t));
+	*philos = malloc(table->number_of_philosophers * sizeof(t_philo));
+	i = 0;
+	while (i < table->number_of_philosophers)
 	{
-		pthread_mutex_lock(&philo->mutex_fork[philo->id -1]);
-		philo->forks[philo->id] = 1;
-		if (philo->id == 0)
-			philo->forks[philo->number_of_philosophers] = 1;
-		else
-			philo->forks[philo->id - 1] = 1;
-		eat(philo);
-		pthread_mutex_unlock(&philo->mutex_fork[philo->id -1]);
+		(*philos)[i].id = i + 1;
+		(*philos)[i].fork_left = i;
+		(*philos)[i].fork_right = (*philos)[i].id % table->number_of_philosophers;
+		(*philos)[i].table = table;
+		pthread_mutex_init(&table->mutex_fork[i], NULL);
+		i++;
 	}
-	return (NULL);
+	table->all_seat = false;
+	table->start_time = 0;
+}
+
+void	create_philos(t_table *table, t_philo *philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->number_of_philosophers)
+	{
+		pthread_create(&philos[i].thread, NULL, start_meal, &philos[i]);
+		i++;
+	}
+}
+
+void philos_ready(t_table *table)
+{
+	table->all_seat = true;
+}
+
+void wait_philos(t_table *table, t_philo *philos)
+{
+	int i = 0;
+	while(i < table->number_of_philosophers)
+	{
+		pthread_join(philos->thread, NULL);
+		i++;
+	}
 }
 
 int	main(int argc, char *argv[])
 {
-	int i;
-	t_philo philo;
-	pthread_t philosohers[200];
+	t_table	table;
+	t_philo *philos;
 
-	if (argc < 5 || argc > 6)
-		printf("Number of arguments is incorret");
-
-	philo.number_of_philosophers = ft_long_atoi(argv[1]);
-	philo.time_to_die = ft_long_atoi(argv[2]);
-	philo.time_to_eat = ft_long_atoi(argv[3]);
-	philo.time_to_sleep = ft_long_atoi(argv[4]);
-	philo.number_of_times_each_philosopher_must_eat = -1;
-	if (argc == 6)
-		philo.number_of_times_each_philosopher_must_eat = ft_long_atoi(argv[4]);
-
-	philo.forks = malloc(philo.number_of_philosophers * sizeof(int));
-	philo.mutex_fork = malloc(philo.number_of_philosophers
-			* sizeof(pthread_mutex_t));
-	i = 0;
-	while (i < philo.number_of_philosophers)
-	{
-		philo.forks[i] = 0;
-		pthread_mutex_init(&philo.mutex_fork[i], NULL);
-		i++;
-	}
-	i = 0;
-	while (i < philo.number_of_philosophers)
-	{
-		philo.id = i + 1;
-		pthread_create(&philosohers[i], NULL, live, &philo);
-		i++;
-	}
+	//VALIDATE ARGUMENTS
+	validate_arguments(argc, argv);
+	
+	//GET ARGUMENTS AND INIT DATA
+	init_data(&table, &philos, argc, argv);
+	
+	//GET START TIME
+	table.start_time = get_time_in_ms(); 
+	
+	//START THREADS
+	create_philos(&table, philos);
+	
+	//WAIT PHILOSOPHERS TO SEAT
+	philos_ready(&table);
+	
+	//WAIT THEM TO EXIT
+	wait_philos(&table, philos);
 }
