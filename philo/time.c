@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 17:04:26 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/05 17:53:22 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/08 15:58:28 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ size_t get_time_in_ms(void)
     return (time);
 }
 
-size_t get_current_time(size_t start_time)
+size_t get_current_time(t_table *table)
 {
     size_t current_time;
 
-    current_time = get_time_in_ms() - start_time;
+    current_time = get_time_in_ms() - table->start_time;
     return (current_time);
 }
