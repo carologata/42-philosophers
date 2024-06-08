@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:08:05 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/08 16:18:47 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/08 16:27:37 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ void	eat(t_philo *philo)
 		safe_printf(philo, EAT);
 		philo->timestamp_last_meal = get_current_time(philo->table);
 		usleep(philo->table->time_to_eat * 1000);
-		pthread_mutex_lock(&philo->table->mutex_fork[philo->fork_left]);
-		pthread_mutex_lock(&philo->table->mutex_fork[philo->fork_right]);
+		pthread_mutex_unlock(&philo->table->mutex_fork[philo->fork_left]);
+		pthread_mutex_unlock(&philo->table->mutex_fork[philo->fork_right]);
 	}
 }
 
