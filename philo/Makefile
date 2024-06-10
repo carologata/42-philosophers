@@ -3,7 +3,7 @@ CFLAGS	:= -Wextra -Wall -Werror -g3
 
 HEADERS	:= -I. -pthread
 
-SRCS = main.c validate.c init.c meal.c time.c safe_functions.c utils.c
+SRCS = main.c validate.c init.c meal.c time.c safe_functions.c utils.c finish.c monitor.c
 
 OBJS = $(SRCS:%.c=%.o)
 
