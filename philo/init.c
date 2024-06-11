@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:05:25 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/10 18:36:42 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/11 12:35:03 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,13 @@ void	init_data(t_table *table, t_philo **philos, int argc, char *argv[])
 		(*philos)[i].table = table;
 		(*philos)[i].last_meal_time = 0;
 		(*philos)[i].meals_eaten = 0;
+		pthread_mutex_init(&(*philos)[i].mutex_philo, NULL);
 		pthread_mutex_init(&table->mutex_fork[i], NULL);
 		i++;
 	}
 	pthread_mutex_init(&table->mutex_print, NULL);
-	pthread_mutex_init(&table->mutex_philo, NULL);
-	table->philo_died = false;
+	table->is_dead = false;
+	table->are_full = false;
 	table->start_time = get_time_in_ms();
 }
 

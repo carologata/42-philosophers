@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:07:00 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/10 18:42:02 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/11 15:14:11 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,30 @@ void	*monitor_philos(void *arg)
 	int		i;
 	t_table	*table;
 	t_philo	*philos;
-	int all_philo_full;
+	int philos_are_full;
 
 	philos = (t_philo *)arg;
 	table = philos[0].table;
-	while (!table->philo_died)
+	while (1)
 	{
 		i = 0;
-		all_philo_full = 0;
+		philos_are_full = 0;
 		while (i < table->number_of_philosophers)
 		{
-			pthread_mutex_lock(&table->mutex_philo);
-			if(philos[i].meals_eaten >= table->number_of_meals)
-				all_philo_full++;
-			if(all_philo_full == table->number_of_philosophers)
-				table->all_full = true;
-			if (philos[i].last_meal_time + philos[i].table->time_to_die < get_current_time(philos[i].table))
+			if(get_units(&philos[i].mutex_philo, philos[i].meals_eaten) >= table->number_of_meals)
+				philos_are_full++;
+			if(philos_are_full == table->number_of_philosophers)
 			{
-				if (!philos[i].table->philo_died)
-				{
-					safe_printf(&philos[i], DIED);
-					philos[i].table->philo_died = true;
-					pthread_mutex_unlock(&philos->table->mutex_philo);
-					return (NULL);
-				}
+				set_status(&philos[i].mutex_philo, &philos[i].table->are_full, true);
+				return (NULL);
 			}
-			pthread_mutex_unlock(&philos->table->mutex_philo);
-			i++;
+			if(get_current_time(philos[i].table) > get_units(&philos[i].mutex_philo, philos[i].last_meal_time) + philos[i].table->time_to_die)
+			{
+				safe_printf(&philos[i], DIED);
+				set_status(&philos[i].mutex_philo, &philos[i].table->is_dead, true);
+				return (NULL);
+			}
 		}
+		i++;
 	}
-	return (NULL);
 }

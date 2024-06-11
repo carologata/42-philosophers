@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:02:31 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/08 11:04:45 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/11 10:37:18 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	validate_arguments(int argc, char *argv[])
 				&& ft_strcmp(&argv[i][0], "9223372036854775807") > 0 && !sign)
 			|| (len == 20 && ft_strcmp(&argv[i][1], "9223372036854775807") > 0
 				&& sign))
-			error_exit("Argument is too big");
+			error_exit("Argument is greater than ");
 		i++;
 	}
 }

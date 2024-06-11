@@ -1,39 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   finish.c                                           :+:      :+:    :+:   */
+/*   meal_alone.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/10 16:55:00 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 17:28:38 by cogata           ###   ########.fr       */
+/*   Created: 2024/06/11 14:27:30 by cogata            #+#    #+#             */
+/*   Updated: 2024/06/11 15:43:59 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	wait_philos(t_table *table, t_philo *philos)
+void *start_meal_alone(void *arg)
 {
-	int	i;
+    t_philo	*philo;
 
-	i = 0;
-	while (i < table->number_of_philosophers)
-	{
-		pthread_join(philos[i].thread, NULL);
-		i++;
-	}
-	pthread_join(table->thread, NULL);
-}
-
-void free_mem_philos(t_philo *philos, t_table *table)
-{
-	int i;
-
-	i = 0;
-	while(i < table->number_of_philosophers)
-	{
-		free(&philos[i]);
-		free(&table->mutex_fork[i]);
-		i++;
-	}
+	philo = (t_philo *)arg;
+    pthread_mutex_lock(&philo->table->mutex_fork[philo->fork_right]);
+	safe_printf(philo, FORK);
+    usleep(philo->table->time_to_die * 1000);
+    pthread_mutex_unlock(&philo->table->mutex_fork[philo->fork_right]);
+    safe_printf(philo, DIED);
+    return (NULL);
 }
