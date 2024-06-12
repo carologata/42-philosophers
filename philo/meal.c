@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:08:05 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 17:23:20 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/12 15:32:29 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void	*start_meal(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	while (!get_status(&philo->mutex_philo, philo->table->is_dead)
-		&& !get_status(&philo->mutex_philo, philo->table->are_full))
+	while (!get_status(&philo->mutex_philo, &philo->table->is_dead)
+		&& !get_status(&philo->mutex_philo, &philo->table->are_full))
 	{
 		eat(philo);
 		sleep_philo(philo);
@@ -31,8 +31,8 @@ void	get_forks_and_eat(t_philo *philo, int first_fork, int second_fork)
 {
 	size_t	end_meal_time;
 
-	if (get_status(&philo->mutex_philo, philo->table->is_dead)
-		|| get_status(&philo->mutex_philo, philo->table->are_full))
+	if (get_status(&philo->mutex_philo, &philo->table->is_dead)
+		|| get_status(&philo->mutex_philo, &philo->table->are_full))
 		return ;
 	pthread_mutex_lock(&philo->table->mutex_fork[first_fork]);
 	safe_printf(philo, FORK);
@@ -40,13 +40,12 @@ void	get_forks_and_eat(t_philo *philo, int first_fork, int second_fork)
 	safe_printf(philo, FORK);
 	safe_printf(philo, EAT);
 	set_units(&philo->mutex_philo, &philo->last_meal_time,
-			get_current_time(philo->table));
+		get_current_time(philo->table));
 	end_meal_time = get_current_time(philo->table) + philo->table->time_to_eat;
 	while (get_current_time(philo->table) < end_meal_time
-		&& !get_status(&philo->mutex_philo, philo->table->is_dead)
-		&& !get_status(&philo->mutex_philo, philo->table->are_full))
+		&& !get_status(&philo->mutex_philo, &philo->table->is_dead)
+		&& !get_status(&philo->mutex_philo, &philo->table->are_full))
 		usleep(1000);
-	safe_printf(philo, OTHER);
 	set_units(&philo->mutex_philo, &philo->meals_eaten, philo->meals_eaten + 1);
 	pthread_mutex_unlock(&philo->table->mutex_fork[first_fork]);
 	pthread_mutex_unlock(&philo->table->mutex_fork[second_fork]);
@@ -64,35 +63,37 @@ void	sleep_philo(t_philo *philo)
 {
 	size_t	end_sleep_time;
 
-	if (get_status(&philo->mutex_philo, philo->table->is_dead)
-		|| get_status(&philo->mutex_philo, philo->table->are_full))
+	if (get_status(&philo->mutex_philo, &philo->table->is_dead)
+		|| get_status(&philo->mutex_philo, &philo->table->are_full))
 		return ;
 	safe_printf(philo, SLEEP);
 	end_sleep_time = get_current_time(philo->table) + philo->table->time_to_eat;
 	while (get_current_time(philo->table) < end_sleep_time
-		&& !get_status(&philo->mutex_philo, philo->table->is_dead)
-		&& !get_status(&philo->mutex_philo, philo->table->are_full))
+		&& !get_status(&philo->mutex_philo, &philo->table->is_dead)
+		&& !get_status(&philo->mutex_philo, &philo->table->are_full))
 		usleep(1000);
 }
 
 void	think(t_philo *philo)
 {
-	size_t	time_to_think;
+	long	time_to_think;
 	size_t	end_think_time;
 
-	if (get_status(&philo->mutex_philo, philo->table->is_dead)
-		|| get_status(&philo->mutex_philo, philo->table->are_full))
+	if (get_status(&philo->mutex_philo, &philo->table->is_dead)
+		|| get_status(&philo->mutex_philo, &philo->table->are_full))
 		return ;
-	time_to_think = (philo->table->time_to_die - (get_current_time(philo->table) - philo->last_meal_time) - philo->table->time_to_eat) / 2;
+	time_to_think = (long)(philo->table->time_to_die
+			- (long)(get_current_time(philo->table)
+				- (long)philo->last_meal_time)
+			- (long)philo->table->time_to_eat) / 2;
 	if (time_to_think < 0)
 		return ;
 	if (time_to_think > 500)
 		time_to_think = 500;
 	end_think_time = get_current_time(philo->table) + time_to_think;
-	// printf("id: %d, time to think: %zu, end time to think: %zu\n", philo->id, time_to_think, end_think_time);
 	safe_printf(philo, THINK);
 	while (get_current_time(philo->table) < end_think_time
-		&& !get_status(&philo->mutex_philo, philo->table->is_dead)
-		&& !get_status(&philo->mutex_philo, philo->table->are_full))
+		&& !get_status(&philo->mutex_philo, &philo->table->is_dead)
+		&& !get_status(&philo->mutex_philo, &philo->table->are_full))
 		usleep(1000);
 }

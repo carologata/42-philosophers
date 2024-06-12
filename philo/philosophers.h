@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 16:44:36 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/12 17:58:36 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,11 @@ typedef enum e_condition
 	OTHER2
 }						t_condition;
 
+void 					check_sign(char *argv[], int i, int *j, bool *sign);
 void					validate_arguments(int argc, char *argv[]);
 void					init_data(t_table *table, t_philo **philos, int argc,
 							char *argv[]);
+void					init_philos_mutexes(t_table *table, t_philo **philos);
 void					create_philos(t_table *table, t_philo *philos);
 void					philos_ready(t_table *table);
 void					wait_philos(t_table *table, t_philo *philos);
@@ -82,13 +84,14 @@ void					sleep_philo(t_philo *philo);
 void					think(t_philo *philo);
 
 void					safe_printf(t_philo *philo, t_condition condition);
-bool					get_status(pthread_mutex_t *mutex, bool variable);
+bool					get_status(pthread_mutex_t *mutex, bool *variable);
 void					set_status(pthread_mutex_t *mutex, bool *variable,
 							bool upudate);
-size_t					get_units(pthread_mutex_t *mutex, size_t variable);
+size_t					get_units(pthread_mutex_t *mutex, size_t *variable);
 void					set_units(pthread_mutex_t *mutex, size_t *variable,
 							size_t update);
 
+bool					check_last_meal_time(t_philo *philos, int i);
 void					*monitor_philos(void *arg);
 
 size_t					get_time_in_ms(void);

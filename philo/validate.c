@@ -6,11 +6,23 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:02:31 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 10:37:18 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/12 17:59:30 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+void	check_sign(char *argv[], int i, int *j, bool *sign)
+{
+	if (argv[i][*j] == '+' || argv[i][*j] == '-')
+	{
+		*sign = true;
+		if (argv[i][*j] == '-')
+			error_exit("Invalid negative number.");
+		else
+			*j = *j + 1;
+	}
+}
 
 void	validate_arguments(int argc, char *argv[])
 {
@@ -26,14 +38,7 @@ void	validate_arguments(int argc, char *argv[])
 	while (argv[i])
 	{
 		j = 0;
-		if (argv[i][j] == '+' || argv[i][j] == '-')
-		{
-			sign = true;
-			if (argv[i][j] == '-')
-				error_exit("Invalid negative number.");
-			else
-				j++;
-		}
+		check_sign(argv, i, &j, &sign);
 		while (argv[i][j])
 		{
 			if (argv[i][j] < '0' || argv[i][j] > '9')
@@ -41,11 +46,11 @@ void	validate_arguments(int argc, char *argv[])
 			j++;
 		}
 		len = ft_strlen(argv[i]);
-		if ((len > 19 && !sign) || (len > 20 && sign) || (len == 19
-				&& ft_strcmp(&argv[i][0], "9223372036854775807") > 0 && !sign)
-			|| (len == 20 && ft_strcmp(&argv[i][1], "9223372036854775807") > 0
-				&& sign))
-			error_exit("Argument is greater than ");
+		if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0], "18446744073709551615") > 0))
+			error_exit("Argument is too big");
 		i++;
 	}
+	if(ft_long_atoi(argv[2]) == 0 || ft_long_atoi(argv[3]) == 0 || ft_long_atoi(argv[4]) == 0)
+		error_exit("Time must be bigger than 0");
 }
+

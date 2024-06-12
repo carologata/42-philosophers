@@ -6,11 +6,12 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:46:19 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 17:28:41 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/12 16:50:53 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+#include <stdint.h>
 
 int	main(int argc, char *argv[])
 {
@@ -20,7 +21,7 @@ int	main(int argc, char *argv[])
 	philos = NULL;
 	validate_arguments(argc, argv);
 	init_data(&table, &philos, argc, argv);
-	if(table.number_of_philosophers == 1)
+	if (table.number_of_philosophers == 1)
 	{
 		pthread_create(&philos[0].thread, NULL, start_meal_alone, &philos[0]);
 		pthread_join(philos[0].thread, NULL);
@@ -28,7 +29,7 @@ int	main(int argc, char *argv[])
 	else
 	{
 		create_philos(&table, philos);
-		wait_philos(&table, philos);	
+		wait_philos(&table, philos);
 	}
-	// free_mem_philos(philos, &table);		
+	free_mem_philos(philos, &table);
 }

@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:15:23 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/11 17:23:35 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/12 15:43:14 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,34 @@
 
 void	safe_printf(t_philo *philo, t_condition condition)
 {
-	if (get_status(&philo->mutex_philo, philo->table->are_full)
-		|| get_status(&philo->mutex_philo, philo->table->is_dead))
+	if (get_status(&philo->mutex_philo, &philo->table->are_full)
+		|| get_status(&philo->mutex_philo, &philo->table->is_dead))
 		return ;
 	pthread_mutex_lock(&philo->table->mutex_print);
 	if (condition == FORK)
 		printf(GRE "%zu %d has taken a fork" RST "\n",
-				get_current_time(philo->table), philo->id);
+			get_current_time(philo->table), philo->id);
 	else if (condition == EAT)
 		printf(MAG "%zu %d is eating" RST "\n", get_current_time(philo->table),
-				philo->id);
+			philo->id);
 	else if (condition == SLEEP)
 		printf(BLU "%zu %d is sleeping" RST "\n",
-				get_current_time(philo->table), philo->id);
+			get_current_time(philo->table), philo->id);
 	else if (condition == THINK)
 		printf(YEL "%zu %d is thinking" RST "\n",
-				get_current_time(philo->table), philo->id);
+			get_current_time(philo->table), philo->id);
 	else if (condition == DIED)
 		printf(RED "%zu %d died" RST "\n", get_current_time(philo->table),
-				philo->id);
-	// else if (condition == OTHER)
-	// 	printf("philo: %d last meal time: %zu\n", philo->id,
-	// 			philo->last_meal_time);
+			philo->id);
 	pthread_mutex_unlock(&philo->table->mutex_print);
 }
 
-bool	get_status(pthread_mutex_t *mutex, bool variable)
+bool	get_status(pthread_mutex_t *mutex, bool *variable)
 {
 	bool	status;
 
 	pthread_mutex_lock(mutex);
-	status = variable;
+	status = *variable;
 	pthread_mutex_unlock(mutex);
 	return (status);
 }
@@ -56,12 +53,12 @@ void	set_status(pthread_mutex_t *mutex, bool *variable, bool update)
 	pthread_mutex_unlock(mutex);
 }
 
-size_t	get_units(pthread_mutex_t *mutex, size_t variable)
+size_t	get_units(pthread_mutex_t *mutex, size_t *variable)
 {
 	size_t	units;
 
 	pthread_mutex_lock(mutex);
-	units = variable;
+	units = *variable;
 	pthread_mutex_unlock(mutex);
 	return (units);
 }
