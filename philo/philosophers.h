@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/12 17:58:36 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/13 13:53:21 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ typedef struct s_table
 	size_t				time_to_sleep;
 	size_t				number_of_meals;
 	pthread_mutex_t		*mutex_fork;
+	pthread_mutex_t		mutex_full;
+	pthread_mutex_t		mutex_dead;
 	pthread_mutex_t		mutex_print;
 	bool				is_dead;
 	bool				are_full;
@@ -63,11 +65,10 @@ typedef enum e_condition
 	SLEEP,
 	THINK,
 	DIED,
-	OTHER,
-	OTHER2
 }						t_condition;
 
-void 					check_sign(char *argv[], int i, int *j, bool *sign);
+void					check_sign(char *argv[], int i, int *j, bool *sign);
+void					check_zero(char *argv[]);
 void					validate_arguments(int argc, char *argv[]);
 void					init_data(t_table *table, t_philo **philos, int argc,
 							char *argv[]);
@@ -86,7 +87,7 @@ void					think(t_philo *philo);
 void					safe_printf(t_philo *philo, t_condition condition);
 bool					get_status(pthread_mutex_t *mutex, bool *variable);
 void					set_status(pthread_mutex_t *mutex, bool *variable,
-							bool upudate);
+							bool update);
 size_t					get_units(pthread_mutex_t *mutex, size_t *variable);
 void					set_units(pthread_mutex_t *mutex, size_t *variable,
 							size_t update);

@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:05:25 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/12 16:50:23 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/13 16:05:04 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ void	init_philos_mutexes(t_table *table, t_philo **philos)
 	{
 		(*philos)[i].id = i + 1;
 		(*philos)[i].fork_left = i;
-		(*philos)[i].fork_right = (*philos)[i].id
-			% table->number_of_philosophers;
+		(*philos)[i].fork_right = (*philos)[i].id % table->number_of_philosophers;
 		(*philos)[i].table = table;
 		(*philos)[i].last_meal_time = 0;
 		(*philos)[i].meals_eaten = 0;
@@ -45,6 +44,8 @@ void	init_data(t_table *table, t_philo **philos, int argc, char *argv[])
 			* sizeof(pthread_mutex_t));
 	*philos = malloc(table->number_of_philosophers * sizeof(t_philo));
 	init_philos_mutexes(table, philos);
+	pthread_mutex_init(&table->mutex_dead, NULL);
+	pthread_mutex_init(&table->mutex_full, NULL);
 	pthread_mutex_init(&table->mutex_print, NULL);
 	table->is_dead = false;
 	table->are_full = false;

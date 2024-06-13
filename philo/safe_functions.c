@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/08 11:15:23 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/12 15:43:14 by cogata           ###   ########.fr       */
+/*   Created: 2024/06/13 13:57:30 by cogata            #+#    #+#             */
+/*   Updated: 2024/06/13 14:59:56 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	safe_printf(t_philo *philo, t_condition condition)
 {
-	if (get_status(&philo->mutex_philo, &philo->table->are_full)
-		|| get_status(&philo->mutex_philo, &philo->table->is_dead))
+	if (get_status(&philo->table->mutex_full, &philo->table->are_full)
+		|| get_status(&philo->table->mutex_dead, &philo->table->is_dead))
 		return ;
 	pthread_mutex_lock(&philo->table->mutex_print);
 	if (condition == FORK)

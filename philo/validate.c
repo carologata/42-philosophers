@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:02:31 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/12 17:59:30 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/13 15:32:54 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@ void	check_sign(char *argv[], int i, int *j, bool *sign)
 		else
 			*j = *j + 1;
 	}
+}
+
+void	check_zero(char *argv[])
+{
+	if (ft_long_atoi(argv[1]) == 0)
+		error_exit("Number of philosophers must be bigger than 0");
 }
 
 void	validate_arguments(int argc, char *argv[])
@@ -46,11 +52,10 @@ void	validate_arguments(int argc, char *argv[])
 			j++;
 		}
 		len = ft_strlen(argv[i]);
-		if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0], "18446744073709551615") > 0))
+		if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0],
+				"18446744073709551615") > 0))
 			error_exit("Argument is too big");
 		i++;
 	}
-	if(ft_long_atoi(argv[2]) == 0 || ft_long_atoi(argv[3]) == 0 || ft_long_atoi(argv[4]) == 0)
-		error_exit("Time must be bigger than 0");
+	check_zero(argv);
 }
-
