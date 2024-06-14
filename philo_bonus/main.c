@@ -6,29 +6,64 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:46:19 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/13 13:52:03 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 17:16:18 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosophers_bonus.h"
+
+void	*monitor_last_meal(void *arg)
+{
+	int		i;
+	t_table	*table;
+
+	table = (t_table *)arg;
+	i = 0;
+	while (i < table->number_of_philosophers)
+	{
+		sem_wait(table->sem_is_full[i]);
+		i++;
+	}
+	i = 0;
+	while (i < table->number_of_philosophers)
+	{
+		kill(table->pid[i], SIGKILL);
+		i++;
+	}
+	return (NULL);
+}
 
 int	main(int argc, char *argv[])
 {
-	t_table	table;
-	t_philo	*philos;
+	int			i;
+	int			status;
+	t_philo		philo;
+	t_table		table;
+	pthread_t	monitor_full;
 
-	philos = NULL;
-	validate_arguments(argc, argv);
-	init_data(&table, &philos, argc, argv);
-	if (table.number_of_philosophers == 1)
+	init_table(argc, argv, &table);
+	pthread_create(&monitor_full, NULL, monitor_last_meal, &table);
+	table.pid = malloc(table.number_of_philosophers * sizeof(int));
+	i = 0;
+	while (i < table.number_of_philosophers)
 	{
-		pthread_create(&philos[0].thread, NULL, start_meal_alone, &philos[0]);
-		pthread_join(philos[0].thread, NULL);
+		table.pid[i] = fork();
+		if (table.pid[i] == 0)
+		{
+			init_philo(&philo, &table, i);
+			start_meal(&philo);
+		}
+		i++;
 	}
-	else
+	waitpid(-1, &status, 0);
+	if (WIFEXITED(status) && WEXITSTATUS(status) == DEAD)
 	{
-		create_philos(&table, philos);
-		wait_philos(&table, philos);
+		i = 0;
+		while (i < table.number_of_philosophers)
+		{
+			kill(table.pid[i], SIGKILL);
+			i++;
+		}
 	}
-	free_mem_philos(philos, &table);
+	pthread_join(monitor_full, NULL);
 }
