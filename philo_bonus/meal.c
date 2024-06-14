@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 13:21:20 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 16:54:55 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 18:42:30 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,21 @@ void	eat(t_philo *philo)
 	monitor(philo);
 	sem_wait(philo->table->sem_forks);
 	print(philo, FORK);
+	monitor(philo);
 	sem_wait(philo->table->sem_forks);
 	print(philo, FORK);
 	end_meal_time = get_current_time(philo->table) + philo->table->time_to_eat;
 	print(philo, EAT);
 	while (get_current_time(philo->table) < end_meal_time && monitor(philo))
 		usleep(1000);
+	printf("id: %d, here!\n", philo->id);
 	philo->meals_eaten++;
 	if (philo->meals_eaten == philo->table->number_of_meals)
+	{
+		printf("id: %d, ready to post!\n", philo->id);
         sem_post(philo->table->sem_is_full[philo->id - 1]);
+		printf("id: %d, meals eaten: %zu, post!\n", philo->id, philo->meals_eaten);
+	}
 	sem_post(philo->table->sem_forks);
 	sem_post(philo->table->sem_forks);
 }

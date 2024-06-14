@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/13 13:53:21 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 17:23:03 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,23 +67,30 @@ typedef enum e_condition
 	DIED,
 }						t_condition;
 
+/* validate */
 void					check_sign(char *argv[], int i, int *j, bool *sign);
-void					check_zero(char *argv[]);
+void					check_zero(int argc, char *argv[]);
+void					check_type(char *argv[], int i);
 void					validate_arguments(int argc, char *argv[]);
+
+/* init */
 void					init_data(t_table *table, t_philo **philos, int argc,
 							char *argv[]);
 void					init_philos_mutexes(t_table *table, t_philo **philos);
 void					create_philos(t_table *table, t_philo *philos);
-void					philos_ready(t_table *table);
+
+/* finish */
 void					wait_philos(t_table *table, t_philo *philos);
 void					free_mem_philos(t_philo *philos, t_table *table);
 
+/* meal */
 void					*start_meal_alone(void *arg);
 void					*start_meal(void *arg);
 void					eat(t_philo *philo);
 void					sleep_philo(t_philo *philo);
 void					think(t_philo *philo);
 
+/* safe functions */
 void					safe_printf(t_philo *philo, t_condition condition);
 bool					get_status(pthread_mutex_t *mutex, bool *variable);
 void					set_status(pthread_mutex_t *mutex, bool *variable,
@@ -92,12 +99,15 @@ size_t					get_units(pthread_mutex_t *mutex, size_t *variable);
 void					set_units(pthread_mutex_t *mutex, size_t *variable,
 							size_t update);
 
+/* monitor */
 bool					check_last_meal_time(t_philo *philos, int i);
 void					*monitor_philos(void *arg);
 
+/* monitor */
 size_t					get_time_in_ms(void);
 size_t					get_current_time(t_table *table);
 
+/* utils */
 void					error_exit(char *error);
 int						ft_strcmp(char *s1, char *s2);
 size_t					ft_strlen(const char *s);

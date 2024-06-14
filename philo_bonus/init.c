@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 16:46:18 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 17:05:39 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 18:04:57 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	init_table(int argc, char *argv[], t_table *table)
 	if (table->sem_forks == SEM_FAILED)
 		error_exit("Semaphore error.");
 	i = 0;
+	table->sem_is_full = malloc(table->number_of_philosophers * sizeof(sem_t *));
 	while (i < table->number_of_philosophers)
 	{
 		sem_full_name = ft_strjoin(FULL, ft_itoa(i));
@@ -43,7 +44,7 @@ void	init_table(int argc, char *argv[], t_table *table)
 
 void	init_philo(t_philo *philo, t_table *table, int i)
 {
-	philo->id = i;
+	philo->id = i + 1;
 	philo->last_meal_time = 0;
 	philo->meals_eaten = 0;
 	philo->table = table;

@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:07:00 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/13 15:33:23 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 17:24:29 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,17 @@ void	*monitor_philos(void *arg)
 		philos_are_full = 0;
 		while (i < table->number_of_philosophers)
 		{
-			if (get_units(&philos[i].mutex_philo,
-					&philos[i].meals_eaten) >= table->number_of_meals)
-				philos_are_full++;
-			if (philos_are_full == table->number_of_philosophers)
+			if (table->number_of_meals)
 			{
-				set_status(&philos[i].table->mutex_full,
-					&philos[i].table->are_full, true);
-				return (NULL);
+				if (get_units(&philos[i].mutex_philo,
+						&philos[i].meals_eaten) >= table->number_of_meals)
+					philos_are_full++;
+				if (philos_are_full == table->number_of_philosophers)
+				{
+					set_status(&philos[i].table->mutex_full,
+						&philos[i].table->are_full, true);
+					return (NULL);
+				}
 			}
 			if (check_last_meal_time(philos, i))
 				return (NULL);

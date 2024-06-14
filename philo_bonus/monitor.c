@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 14:05:24 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 16:52:07 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 18:25:55 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ bool	monitor(t_philo *philo)
 	philos_are_full = 0;
 	table = philo->table;
 	if (get_current_time(philo->table) > philo->last_meal_time + philo->table->time_to_die)
+	{
+		print(philo, DIED);
 		exit(DEAD);
+	}	
 	return (true);
 }

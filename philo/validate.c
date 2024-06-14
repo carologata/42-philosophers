@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:02:31 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/13 15:32:54 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/14 17:23:19 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,22 @@ void	check_sign(char *argv[], int i, int *j, bool *sign)
 	}
 }
 
-void	check_zero(char *argv[])
+void	check_zero(int argc, char *argv[])
 {
 	if (ft_long_atoi(argv[1]) == 0)
 		error_exit("Number of philosophers must be bigger than 0");
+	if (argc == 6 && ft_long_atoi(argv[5]) == 0)
+		error_exit("Number of meals must be bigger than 0");
+}
+
+void	check_type(char *argv[], int i)
+{
+	int	len;
+
+	len = ft_strlen(argv[i]);
+	if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0],
+			"18446744073709551615") > 0))
+		error_exit("Argument is too big");
 }
 
 void	validate_arguments(int argc, char *argv[])
@@ -52,10 +64,8 @@ void	validate_arguments(int argc, char *argv[])
 			j++;
 		}
 		len = ft_strlen(argv[i]);
-		if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0],
-				"18446744073709551615") > 0))
-			error_exit("Argument is too big");
+		check_type(argv, i);
 		i++;
 	}
-	check_zero(argv);
+	check_zero(argc, argv);
 }
