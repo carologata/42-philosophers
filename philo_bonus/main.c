@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:46:19 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 18:43:13 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/18 13:20:05 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@ void	*monitor_last_meal(void *arg)
 	i = 0;
 	while (i < table->number_of_philosophers)
 	{
-		printf("id: %d wait\n", i + 1);
 		sem_wait(table->sem_is_full[i]);
-		printf("id: %d wait ok\n", i + 1);
 		i++;
 	}
 	i = 0;
@@ -39,7 +37,7 @@ int	main(int argc, char *argv[])
 {
 	int			i;
 	int			status;
-	t_philo		philo;
+	t_philo		*philos;
 	t_table		table;
 	pthread_t	monitor_full;
 
@@ -49,21 +47,22 @@ int	main(int argc, char *argv[])
 		pthread_create(&monitor_full, NULL, monitor_last_meal, &table);
 	
 	table.pid = malloc(table.number_of_philosophers * sizeof(int));
+	philos = malloc(table.number_of_philosophers * sizeof(t_philo));
 	i = 0;
 	while (i < table.number_of_philosophers)
 	{
 		table.pid[i] = fork();
 		if (table.pid[i] == 0)
 		{
-			init_philo(&philo, &table, i);
-			start_meal(&philo);
+			init_philo(&philos[i], &table, i);
+			start_meal(&philos[i]);
 		}
 		i++;
 	}
 	waitpid(-1, &status, 0);
 	if (WIFSIGNALED(status))
 	{
-		printf("FINISHED BY THREAD\n");
+		printf("signal status %d\n", status);
 	}
 	else if (WIFEXITED(status) && WEXITSTATUS(status) == DEAD)
 	{

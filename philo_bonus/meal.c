@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 13:21:20 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 18:42:30 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/18 12:18:38 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,26 +26,30 @@ void	eat(t_philo *philo)
 {
 	size_t	end_meal_time;
 
-	monitor(philo);
+	
 	sem_wait(philo->table->sem_forks);
 	print(philo, FORK);
 	monitor(philo);
 	sem_wait(philo->table->sem_forks);
 	print(philo, FORK);
-	end_meal_time = get_current_time(philo->table) + philo->table->time_to_eat;
+	
+	end_meal_time = get_current_time(philo) + philo->table->time_to_eat;
+	philo->last_meal_time = get_current_time(philo);
 	print(philo, EAT);
-	while (get_current_time(philo->table) < end_meal_time && monitor(philo))
+	
+	while (get_current_time(philo) < end_meal_time && monitor(philo))
 		usleep(1000);
-	printf("id: %d, here!\n", philo->id);
+	
+	sem_post(philo->table->sem_forks);
+	sem_post(philo->table->sem_forks);
+		
 	philo->meals_eaten++;
 	if (philo->meals_eaten == philo->table->number_of_meals)
 	{
-		printf("id: %d, ready to post!\n", philo->id);
+		// printf("id: %d, ready to post!\n", philo->id);
         sem_post(philo->table->sem_is_full[philo->id - 1]);
-		printf("id: %d, meals eaten: %zu, post!\n", philo->id, philo->meals_eaten);
+		// printf("id: %d, meals eaten: %zu, post!\n", philo->id, philo->meals_eaten);
 	}
-	sem_post(philo->table->sem_forks);
-	sem_post(philo->table->sem_forks);
 }
 
 void	sleep_philo(t_philo *philo)
@@ -53,9 +57,9 @@ void	sleep_philo(t_philo *philo)
 	size_t	end_sleep_time;
 
 	monitor(philo);
-	end_sleep_time = get_current_time(philo->table) + philo->table->time_to_sleep;
+	end_sleep_time = get_current_time(philo) + philo->table->time_to_sleep;
 	print(philo, SLEEP);
-	while (get_current_time(philo->table) < end_sleep_time && monitor(philo))
+	while (get_current_time(philo) < end_sleep_time && monitor(philo))
 		usleep(1000);
 }
 
@@ -65,13 +69,13 @@ void	think(t_philo *philo)
 	size_t	end_think_time;
 
 	monitor(philo);
-	time_to_think = (long)(philo->table->time_to_die - (long)(get_current_time(philo->table) - (long)philo->last_meal_time) - (long)philo->table->time_to_eat) / 2;
+	time_to_think = (long)(philo->table->time_to_die - (long)(get_current_time(philo) - (long)philo->last_meal_time) - (long)philo->table->time_to_eat) / 2;
 	if (time_to_think < 0)
 		return ;
 	if (time_to_think > 500)
 		time_to_think = 500;
-	end_think_time = get_current_time(philo->table) + time_to_think;
+	end_think_time = get_current_time(philo) + time_to_think;
 	print(philo, THINK);
-	while (get_current_time(philo->table) < end_think_time && monitor(philo))
+	while (get_current_time(philo) < end_think_time && monitor(philo))
 		usleep(1000);
 }

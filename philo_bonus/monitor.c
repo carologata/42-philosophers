@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 14:05:24 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 18:25:55 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/18 12:20:33 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,12 @@
 
 bool	monitor(t_philo *philo)
 {
-	int i;
 	t_table *table;
-	int philos_are_full;
 
-	i = 0;
-	philos_are_full = 0;
 	table = philo->table;
-	if (get_current_time(philo->table) > philo->last_meal_time + philo->table->time_to_die)
+	if (get_current_time(philo) > philo->last_meal_time + philo->table->time_to_die)
 	{
+		// printf("id: %d, current time: %zu, last meal: %zu, time to die: %zu\n", philo->id, get_current_time(philo), philo->last_meal_time, philo->table->time_to_die);
 		print(philo, DIED);
 		exit(DEAD);
 	}	

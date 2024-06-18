@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 16:53:18 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/18 11:58:55 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_philo
 	size_t				last_meal_time;
 	size_t				meals_eaten;
 	t_table				*table;
+	struct timeval		tv;
 }						t_philo;
 
 typedef struct s_table
@@ -51,7 +52,7 @@ typedef struct s_table
 	size_t				time_to_die;
 	size_t				time_to_eat;
 	size_t				time_to_sleep;
-	size_t					number_of_meals;
+	size_t				number_of_meals;
 	size_t				start_time;
 	int					*pid;
 	sem_t				*sem_forks;
@@ -97,7 +98,7 @@ bool					monitor(t_philo *philo);
 
 /* time */
 size_t					get_time_in_ms(void);
-size_t					get_current_time(t_table *table);
+size_t					get_current_time(t_philo *philo);
 
 /* print */
 void					print(t_philo *philo, t_condition condition);
