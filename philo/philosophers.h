@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 17:23:03 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:36:04 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ typedef enum e_condition
 }						t_condition;
 
 /* validate */
+void					validate_arguments(int argc, char *argv[]);
 void					check_sign(char *argv[], int i, int *j, bool *sign);
 void					check_zero(int argc, char *argv[]);
-void					check_type(char *argv[], int i);
-void					validate_arguments(int argc, char *argv[]);
+void					check_size(char *str);
 
 /* init */
 void					init_data(t_table *table, t_philo **philos, int argc,
@@ -101,6 +101,8 @@ void					set_units(pthread_mutex_t *mutex, size_t *variable,
 
 /* monitor */
 bool					check_last_meal_time(t_philo *philos, int i);
+bool					check_all_philos_full(t_philo *philo, t_table *table,
+							int philos_are_full);
 void					*monitor_philos(void *arg);
 
 /* monitor */

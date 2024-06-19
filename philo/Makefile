@@ -22,6 +22,13 @@ hel: all
 		-s \
 		./$(NAME) 5 1800 200 200 
 
+drd: all
+	valgrind \
+		--tool=drd \
+		-s \
+		./$(NAME) 5 1800 200 200 5
+#       --log-file=drd-out.txt \
+
 clean:
 	@rm -rf $(OBJS)
 	# @rm -rf $(OBJS_BONUS)

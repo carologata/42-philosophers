@@ -6,11 +6,37 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 11:02:31 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/14 17:23:19 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:24:52 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+void	validate_arguments(int argc, char *argv[])
+{
+	int		i;
+	int		j;
+	bool	sign;
+
+	if (argc < 5 || argc > 6)
+		error_exit("Invalid number of arguments.");
+	i = 1;
+	sign = false;
+	while (argv[i])
+	{
+		j = 0;
+		check_sign(argv, i, &j, &sign);
+		while (argv[i][j])
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+				error_exit("Invalid number.");
+			j++;
+		}
+		check_size(argv[i]);
+		i++;
+	}
+	check_zero(argc, argv);
+}
 
 void	check_sign(char *argv[], int i, int *j, bool *sign)
 {
@@ -32,40 +58,11 @@ void	check_zero(int argc, char *argv[])
 		error_exit("Number of meals must be bigger than 0");
 }
 
-void	check_type(char *argv[], int i)
+void	check_size(char *str)
 {
 	int	len;
 
-	len = ft_strlen(argv[i]);
-	if (len > 20 || (len == 20 && ft_strcmp(&argv[i][0],
-			"18446744073709551615") > 0))
+	len = ft_strlen(str);
+	if (len > 20 || (len == 20 && ft_strcmp(str, "18446744073709551615") > 0))
 		error_exit("Argument is too big");
-}
-
-void	validate_arguments(int argc, char *argv[])
-{
-	int		i;
-	int		j;
-	bool	sign;
-	int		len;
-
-	if (argc < 5 || argc > 6)
-		error_exit("Invalid number of arguments.");
-	i = 1;
-	sign = false;
-	while (argv[i])
-	{
-		j = 0;
-		check_sign(argv, i, &j, &sign);
-		while (argv[i][j])
-		{
-			if (argv[i][j] < '0' || argv[i][j] > '9')
-				error_exit("Invalid number.");
-			j++;
-		}
-		len = ft_strlen(argv[i]);
-		check_type(argv, i);
-		i++;
-	}
-	check_zero(argc, argv);
 }

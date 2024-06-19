@@ -1,22 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   init_table.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 16:46:18 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/18 11:59:10 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:23:26 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers_bonus.h"
 
+sem_t	*init_sem(char *file, int value)
+{
+	sem_t	*sem;
+
+	sem_unlink(file);
+	sem = sem_open(file, O_CREAT, 0664, value);
+	sem_unlink(file);
+	if (sem == SEM_FAILED)
+		error_exit("Semaphore error.");
+	return (sem);
+}
+
 void	init_table(int argc, char *argv[], t_table *table)
 {
-	int		i;
-	char	*sem_full_name;
-
 	table->number_of_philosophers = (int)ft_long_atoi(argv[1]);
 	table->time_to_die = ft_long_atoi(argv[2]);
 	table->time_to_eat = ft_long_atoi(argv[3]);
@@ -24,28 +33,20 @@ void	init_table(int argc, char *argv[], t_table *table)
 	table->number_of_meals = 0;
 	if (argc == 6)
 		table->number_of_meals = ft_long_atoi(argv[5]);
-	sem_unlink(FORKS);
-	table->sem_forks = sem_open(FORKS, O_CREAT, 0664, table->number_of_philosophers);
-	if (table->sem_forks == SEM_FAILED)
-		error_exit("Semaphore error.");
-	i = 0;
-	table->sem_is_full = malloc(table->number_of_philosophers * sizeof(sem_t *));
-	while (i < table->number_of_philosophers)
+	if (table->number_of_philosophers > 1)
 	{
-		sem_full_name = ft_strjoin(FULL, ft_itoa(i));
-		sem_unlink(sem_full_name);
-		table->sem_is_full[i] = sem_open(sem_full_name, O_CREAT, 0664, 0);
-		if (table->sem_is_full[i] == SEM_FAILED)
-			error_exit("Semaphore error.");
-		i++;
+		table->dinner_finished = false;
+		table->sem_door = init_sem(DOOR, table->number_of_philosophers / 2);
+		table->sem_forks = init_sem(FORKS, table->number_of_philosophers);
+		table->sem_is_dead = init_sem(DEAD, 0);
+		table->sem_is_full = init_sem(FULL, 0);
+		table->sem_dinner_finished = init_sem(DINNER, 1);
+		table->sem_kill = init_sem(KILL, 1);
+		pthread_create(&(table->monitor_philo_died), NULL, monitor_someone_died,
+			table);
+		if (argc == 6)
+			pthread_create(&(table->monitor_philos_full), NULL,
+				monitor_last_meals, table);
 	}
 	table->start_time = get_time_in_ms();
-}
-
-void	init_philo(t_philo *philo, t_table *table, int i)
-{
-	philo->id = i + 1;
-	philo->last_meal_time = 0;
-	philo->meals_eaten = 0;
-	philo->table = table;
 }

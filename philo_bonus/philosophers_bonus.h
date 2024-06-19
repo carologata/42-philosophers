@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/18 11:58:55 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/19 17:21:48 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,14 @@
 # define MAG "\033[1;35m" /* Bold Magenta */
 
 # define FORKS "forks"
+# define DEAD "dead"
 # define FULL "full"
-# define DEAD 1
+# define DINNER "dinner_finished"
+# define DOOR "door"
+# define KILL "kill"
+
+# define CHILD "child"
+# define PRINT "print"
 
 typedef struct s_table	t_table;
 
@@ -42,8 +48,9 @@ typedef struct s_philo
 	int					id;
 	size_t				last_meal_time;
 	size_t				meals_eaten;
+	sem_t				*sem_philo;
+	sem_t				*sem_print;
 	t_table				*table;
-	struct timeval		tv;
 }						t_philo;
 
 typedef struct s_table
@@ -54,38 +61,45 @@ typedef struct s_table
 	size_t				time_to_sleep;
 	size_t				number_of_meals;
 	size_t				start_time;
+	bool				dinner_finished;
 	int					*pid;
+	pthread_t			monitor_philos_full;
+	pthread_t			monitor_philo_died;
 	sem_t				*sem_forks;
-	sem_t				**sem_is_full;
+	sem_t				*sem_is_dead;
+	sem_t				*sem_is_full;
+	sem_t				*sem_dinner_finished;
+	sem_t				*sem_door;
+	sem_t				*sem_kill;
 }						t_table;
 
 typedef enum e_condition
 {
+	DIED,
 	FORK,
 	EAT,
 	SLEEP,
 	THINK,
-	DIED,
 }						t_condition;
 
 /* validate */
 void					check_sign(char *argv[], int i, int *j, bool *sign);
 void					check_zero(int argc, char *argv[]);
+void					check_size(char *str);
 void					validate_arguments(int argc, char *argv[]);
-void					init_data(t_table *table, t_philo **philos, int argc,
-							char *argv[]);
-void					init_philos_mutexes(t_table *table, t_philo **philos);
-void					create_philos(t_table *table, t_philo *philos);
-void					philos_ready(t_table *table);
-void					wait_philos(t_table *table, t_philo *philos);
-void					free_mem_philos(t_philo *philos, t_table *table);
 
-/* init */
+/* init table */
+sem_t					*init_sem(char *file, int value);
 void					init_table(int argc, char *argv[], t_table *table);
-void					init_philo(t_philo *philo, t_table *table, int i);
 
-/* monitor thread full */
+/* child processes */
+void					start_child_process(t_table *table, int i);
+void					init_philo(t_philo *philo, t_table *table, int i);
+void					create_thread_for_child(t_philo *philo);
 void					*monitor_last_meal(void *arg);
+
+/* meal alone */
+int						meal_alone(t_table *table);
 
 /* meal */
 void					start_meal(t_philo *philo);
@@ -93,27 +107,31 @@ void					eat(t_philo *philo);
 void					sleep_philo(t_philo *philo);
 void					think(t_philo *philo);
 
-/* monitor dead */
-bool					monitor(t_philo *philo);
+/* safe functions */
+bool					get_status(sem_t *sem, bool *variable);
+void					set_status(sem_t *sem, bool *variable, bool update);
+size_t					get_units(sem_t *sem, size_t *variable);
+void					set_units(sem_t *sem, size_t *variable, size_t update);
+
+/* parent monitors */
+void					*monitor_last_meals(void *arg);
+void					*monitor_someone_died(void *arg);
+void					kill_philos(t_table *table);
+
+/* print */
+void					print(t_philo *philo, t_condition condition);
 
 /* time */
 size_t					get_time_in_ms(void);
 size_t					get_current_time(t_philo *philo);
-
-/* print */
-void					print(t_philo *philo, t_condition condition);
 
 /* utils */
 void					error_exit(char *error);
 int						ft_strcmp(char *s1, char *s2);
 size_t					ft_strlen(const char *s);
 size_t					ft_long_atoi(const char *nptr);
-char					*ft_copy_str(char const *s1, char const *s2, char *res);
-char					*ft_strjoin(char const *s1, char const *s2);
-long long				ft_count_divider(long nb);
-char					*ft_init_str(long nb, char *res, int count,
-							int is_negative);
-int						ft_count_num(long nb);
-char					*ft_itoa(int n);
+
+/* finish */
+void					finish(int argc, t_table *table);
 
 #endif

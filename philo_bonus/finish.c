@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time.c                                             :+:      :+:    :+:   */
+/*   finish.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/05 17:04:26 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/19 10:15:08 by cogata           ###   ########.fr       */
+/*   Created: 2024/06/19 11:15:51 by cogata            #+#    #+#             */
+/*   Updated: 2024/06/19 16:30:57 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers_bonus.h"
 
-size_t	get_time_in_ms(void)
+void	finish(int argc, t_table *table)
 {
-	struct timeval	tv;
-	size_t			time;
-
-	if (gettimeofday(&tv, NULL) == -1)
-		error_exit("gettimeofday failed.");
-	time = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-	return (time);
-}
-
-size_t	get_current_time(t_philo *philo)
-{
-	size_t	current_time;
-
-	current_time = get_time_in_ms() - philo->table->start_time;
-	return (current_time);
+	pthread_join(table->monitor_philo_died, NULL);
+	if (argc == 6)
+		pthread_join(table->monitor_philos_full, NULL);
+	sem_close(table->sem_door);
+	sem_close(table->sem_forks);
+	sem_close(table->sem_is_dead);
+	sem_close(table->sem_is_full);
+	sem_close(table->sem_dinner_finished);
+	sem_close(table->sem_kill);
+	free(table->pid);
 }

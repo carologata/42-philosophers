@@ -1,27 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor.c                                          :+:      :+:    :+:   */
+/*   meal_alone.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/14 14:05:24 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/18 12:20:33 by cogata           ###   ########.fr       */
+/*   Created: 2024/06/19 16:34:35 by cogata            #+#    #+#             */
+/*   Updated: 2024/06/19 17:23:14 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers_bonus.h"
 
-bool	monitor(t_philo *philo)
+int	meal_alone(t_table *table)
 {
-	t_table *table;
+	int		pid;
+	int		status;
+	t_philo	philo;
 
-	table = philo->table;
-	if (get_current_time(philo) > philo->last_meal_time + philo->table->time_to_die)
+	pid = fork();
+	if (pid == 0)
 	{
-		// printf("id: %d, current time: %zu, last meal: %zu, time to die: %zu\n", philo->id, get_current_time(philo), philo->last_meal_time, philo->table->time_to_die);
-		print(philo, DIED);
-		exit(DEAD);
-	}	
-	return (true);
+		init_philo(&philo, table, 0);
+		print(&philo, FORK);
+		usleep(philo.table->time_to_die * 1000);
+		print(&philo, DIED);
+		sem_close(philo.sem_print);
+	}
+	waitpid(pid, &status, 0);
+	return (0);
 }
