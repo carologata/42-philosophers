@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:07:00 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/19 17:49:49 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/20 09:57:19 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,13 @@ bool	check_last_meal_time(t_philo *philos, int i)
 	return (false);
 }
 
-bool	check_all_philos_full(t_philo *philo, t_table *table,
-		int philos_are_full)
+bool	check_philos_are_full(t_philo *philo, t_table *table,
+		int *philos_are_full)
 {
-	if (philos_are_full == table->number_of_philosophers)
+	if (get_units(&philo->mutex_philo,
+			&philo->meals_eaten) >= table->number_of_meals)
+		*philos_are_full = *philos_are_full + 1;
+	if (*philos_are_full == table->number_of_philosophers)
 	{
 		set_status(&philo->table->mutex_full, &philo->table->are_full, true);
 		return (true);
@@ -53,10 +56,7 @@ void	*monitor_philos(void *arg)
 		{
 			if (table->number_of_meals)
 			{
-				if (get_units(&philos[i].mutex_philo,
-						&philos[i].meals_eaten) >= table->number_of_meals)
-					philos_are_full++;
-				if (check_all_philos_full(&philos[i], table, philos_are_full))
+				if (check_philos_are_full(&philos[i], table, &philos_are_full))
 					return (NULL);
 			}
 			if (check_last_meal_time(philos, i))

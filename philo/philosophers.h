@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:48:14 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/19 17:36:04 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/20 09:55:11 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,11 @@ void					set_units(pthread_mutex_t *mutex, size_t *variable,
 
 /* monitor */
 bool					check_last_meal_time(t_philo *philos, int i);
-bool					check_all_philos_full(t_philo *philo, t_table *table,
-							int philos_are_full);
+bool					check_philos_are_full(t_philo *philo, t_table *table,
+							int *philos_are_full);
 void					*monitor_philos(void *arg);
 
-/* monitor */
+/* time */
 size_t					get_time_in_ms(void);
 size_t					get_current_time(t_table *table);
 
