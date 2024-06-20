@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:08:05 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/13 15:33:45 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/20 10:10:31 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,12 @@ void	think(t_philo *philo)
 			- (long)(get_current_time(philo->table)
 				- (long)philo->last_meal_time)
 			- (long)philo->table->time_to_eat) / 2;
+	safe_printf(philo, THINK);
 	if (time_to_think < 0)
 		return ;
 	if (time_to_think > 500)
 		time_to_think = 500;
 	end_think_time = get_current_time(philo->table) + time_to_think;
-	safe_printf(philo, THINK);
 	while (get_current_time(philo->table) < end_think_time
 		&& !get_status(&philo->table->mutex_dead, &philo->table->is_dead)
 		&& !get_status(&philo->table->mutex_full, &philo->table->are_full))

@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 13:46:19 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/19 17:21:06 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/20 10:51:04 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	main(int argc, char *argv[])
 		return (meal_alone(&table));
 	table.pid = malloc(table.number_of_philosophers * sizeof(int));
 	i = 0;
+	sem_wait(table.sem_kill);
 	while (i < table.number_of_philosophers)
 	{
 		table.pid[i] = fork();
@@ -31,6 +32,7 @@ int	main(int argc, char *argv[])
 			start_child_process(&table, i);
 		i++;
 	}
+	sem_post(table.sem_kill);
 	i = 0;
 	while (i++ < table.number_of_philosophers)
 		waitpid(table.pid[i], &status, 0);

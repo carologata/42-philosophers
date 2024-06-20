@@ -6,7 +6,7 @@
 /*   By: cogata <cogata@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 13:21:20 by cogata            #+#    #+#             */
-/*   Updated: 2024/06/19 14:55:00 by cogata           ###   ########.fr       */
+/*   Updated: 2024/06/20 11:36:29 by cogata           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ void	eat(t_philo *philo)
 	print(philo, FORK);
 	sem_wait(philo->table->sem_forks);
 	print(philo, FORK);
-	end_meal_time = get_current_time(philo) + philo->table->time_to_eat;
 	set_units(philo->sem_philo, &philo->last_meal_time,
 		get_current_time(philo));
+	end_meal_time = get_current_time(philo) + philo->table->time_to_eat;
 	print(philo, EAT);
 	while (get_current_time(philo) < end_meal_time)
 		usleep(1000);
