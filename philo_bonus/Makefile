@@ -20,8 +20,7 @@ hel: all
 		--tool=helgrind \
 		--history-level=none \
 		-s \
-		./$(NAME) 4 410 200 200 
-# ./$(NAME) 5 1800 200 200 
+		./$(NAME) 5 1800 200 200 8
 
 drd: all
 	valgrind \
